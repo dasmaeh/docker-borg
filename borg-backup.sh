@@ -45,7 +45,7 @@ fi
 if [ -z "${UMASK:-}" ]; then
     UMASK=''
 else
-    UMASK=" -umask=${UMASK}"
+    UMASK=" --umask ${UMASK}"
 fi
 
 if [ -z "${BORG_REPO:-}" ]; then
