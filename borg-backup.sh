@@ -41,6 +41,13 @@ if [ -n "${SSHFS:-}" ]; then
     BORG_REPO=/mnt/sshfs
 fi
 
+
+if [ -z "${UMASK:-}" ]; then
+    UMASK=''
+else
+    UMASK=" -umask=${UMASK}"
+fi
+
 if [ -z "${BORG_REPO:-}" ]; then
     echoerr 'Variable $BORG_REPO is required. Please set it to the repository location.'
     quit 1
@@ -105,7 +112,7 @@ else
     EXCLUDE_BORG=''
 fi
 
-borg create -v --stats --show-rc $COMPRESSION $EXCLUDE_BORG ::"$ARCHIVE" $BACKUP_DIRS
+borg create -v --stats --show-rc $COMPRESSION $EXCLUDE_BORG ::"$ARCHIVE" $BACKUP_DIRS  ${UMASK}
 
 if [ -n "${PRUNE:-}" ]; then
     if [ -n "${PRUNE_PREFIX:-}" ]; then
@@ -123,7 +130,7 @@ if [ -n "${PRUNE:-}" ]; then
         KEEP_MONTHLY=6
     fi
 
-    borg prune -v --stats --show-rc $PRUNE_PREFIX --keep-daily=$KEEP_DAILY --keep-weekly=$KEEP_WEEKLY --keep-monthly=$KEEP_MONTHLY
+    borg prune -v --stats --show-rc $PRUNE_PREFIX --keep-daily=$KEEP_DAILY --keep-weekly=$KEEP_WEEKLY --keep-monthly=$KEEP_MONTHLY  ${UMASK}
 fi
 
 if [ "${BORG_SKIP_CHECK:-}" != '1' ] && [ "${BORG_SKIP_CHECK:-}" != "true" ]; then
