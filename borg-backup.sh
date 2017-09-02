@@ -74,7 +74,7 @@ if [ -n "${EXTRACT_TO:-}" ]; then
 fi
 
 if [ -n "${BORG_PARAMS:-}" ]; then
-    borg $BORG_PARAMS
+    borg $BORG_PARAMS $UMASK
     quit
 fi
 
@@ -89,7 +89,7 @@ if [ "${BORG_REPO:0:1}" == '/' ] && [ ! "$(ls -A $BORG_REPO)" ]; then
 fi
 
 if [ -n "${INIT_REPO:-}" ]; then
-    borg init -v --show-rc $INIT_ENCRYPTION
+    borg init -v --show-rc $INIT_ENCRYPTION $UMASK
 fi
 
 if [ -n "${COMPRESSION:-}" ]; then
@@ -112,7 +112,7 @@ else
     EXCLUDE_BORG=''
 fi
 
-borg create -v --stats --show-rc $COMPRESSION $EXCLUDE_BORG ::"$ARCHIVE" $BACKUP_DIRS  ${UMASK}
+borg create -v --stats --show-rc $COMPRESSION $EXCLUDE_BORG ::"$ARCHIVE" $BACKUP_DIRS  $UMASK
 
 if [ -n "${PRUNE:-}" ]; then
     if [ -n "${PRUNE_PREFIX:-}" ]; then
@@ -130,11 +130,11 @@ if [ -n "${PRUNE:-}" ]; then
         KEEP_MONTHLY=6
     fi
 
-    borg prune -v --stats --show-rc $PRUNE_PREFIX --keep-daily=$KEEP_DAILY --keep-weekly=$KEEP_WEEKLY --keep-monthly=$KEEP_MONTHLY  ${UMASK}
+    borg prune -v --stats --show-rc $UMASK $PRUNE_PREFIX --keep-daily=$KEEP_DAILY --keep-weekly=$KEEP_WEEKLY --keep-monthly=$KEEP_MONTHLY 
 fi
 
 if [ "${BORG_SKIP_CHECK:-}" != '1' ] && [ "${BORG_SKIP_CHECK:-}" != "true" ]; then
-    borg check -v --show-rc
+    borg check -v --show-rc $UMASK
 fi
 
 quit
